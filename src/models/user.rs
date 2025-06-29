@@ -6,6 +6,7 @@ use time::{format_description::well_known::Rfc3339, OffsetDateTime};
 pub struct User {
     pub username: String,
     pub name: String,
+    #[serde(with = "time::serde::rfc3339")]
     pub created: OffsetDateTime,
 }
 

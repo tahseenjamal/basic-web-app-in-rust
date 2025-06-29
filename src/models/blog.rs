@@ -7,6 +7,7 @@ use super::user::User;
 pub struct Blog {
     user: User,
     tweet: String,
+    #[serde(with = "time::serde::rfc3339")]
     timestamp: OffsetDateTime,
 }
 
