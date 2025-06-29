@@ -1,4 +1,5 @@
 use axum::{response::IntoResponse, Json};
+use time::{format_description::well_known::Rfc3339, OffsetDateTime};
 
 use super::user::User;
 
@@ -6,11 +7,11 @@ use super::user::User;
 pub struct Blog {
     user: User,
     tweet: String,
-    timestamp: u32,
+    timestamp: OffsetDateTime,
 }
 
 impl Blog {
-    pub fn new(user: User, tweet: String, timestamp: u32) -> Blog {
+    pub fn new(user: User, tweet: String, timestamp: OffsetDateTime) -> Blog {
         Blog {
             user: user,
             tweet: tweet,
@@ -20,9 +21,13 @@ impl Blog {
 }
 pub async fn create_blog() -> impl IntoResponse {
     Json(Blog::new(
-        User::new("tahseen".to_string(), "Tahseen".to_string(), 3434),
+        User::new(
+            "tahseen".to_string(),
+            "Tahseen".to_string(),
+            OffsetDateTime::parse("2024-06-30T15:45:00+05:30", &Rfc3339).unwrap(),
+        ),
         "Hello World!".to_string(),
-        3434,
+        OffsetDateTime::parse("2024-06-30T15:45:00+05:30", &Rfc3339).unwrap(),
     ))
 }
 pub async fn get_blog() -> impl IntoResponse {
@@ -30,9 +35,9 @@ pub async fn get_blog() -> impl IntoResponse {
         user: User {
             username: "tahseen".to_string(),
             name: "Tahseen".to_string(),
-            created: 3434,
+            created: OffsetDateTime::parse("2024-06-30T15:45:00+05:30", &Rfc3339).unwrap(),
         },
         tweet: "Hello World!".to_string(),
-        timestamp: 3434,
+        timestamp: OffsetDateTime::parse("2024-06-30T15:45:00+05:30", &Rfc3339).unwrap(),
     })
 }
