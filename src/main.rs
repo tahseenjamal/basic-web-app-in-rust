@@ -10,6 +10,7 @@ mod routes {
 
 #[tokio::main]
 async fn main() {
+    println!("Starting the server...");
     let routes = create_routes();
     let address = "127.0.0.1:3000";
     let listener = tokio::net::TcpListener::bind(address).await.unwrap();
