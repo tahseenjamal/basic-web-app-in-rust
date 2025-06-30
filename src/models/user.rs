@@ -1,8 +1,9 @@
 use axum::{response::IntoResponse, Json};
 
+use serde::Serialize;
 use time::{format_description::well_known::Rfc3339, OffsetDateTime};
 
-#[derive(serde::Serialize)]
+#[derive(Serialize)]
 pub struct User {
     pub username: String,
     pub name: String,

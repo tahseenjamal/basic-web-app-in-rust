@@ -1,9 +1,10 @@
 use axum::{response::IntoResponse, Json};
+use serde::Serialize;
 use time::{format_description::well_known::Rfc3339, OffsetDateTime};
 
 use super::user::User;
 
-#[derive(serde::Serialize)]
+#[derive(Serialize)]
 pub struct Blog {
     user: User,
     tweet: String,
