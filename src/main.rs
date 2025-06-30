@@ -5,7 +5,9 @@ mod models {
     pub mod user;
 }
 mod routes {
+    pub mod blog_routes;
     pub mod routes;
+    pub mod user_routes;
 }
 
 #[tokio::main]

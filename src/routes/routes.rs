@@ -1,17 +1,7 @@
-use axum::{
-    routing::{get, post},
-    Router,
-};
+use axum::Router;
 
-use crate::models::{
-    blog::{create_blog, get_blog},
-    user::{create_user, get_user},
-};
+use crate::routes::{blog_routes::blog_routes, user_routes::user_routes};
 
 pub fn create_routes() -> Router {
-    Router::new()
-        .route("/blog", post(create_blog))
-        .route("/user", post(create_user))
-        .route("/blog", get(get_blog))
-        .route("/user", get(get_user))
+    Router::new().merge(blog_routes()).merge(user_routes())
 }
