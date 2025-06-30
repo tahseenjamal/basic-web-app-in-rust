@@ -1,9 +1,9 @@
-use axum::{response::IntoResponse, Json};
+use axum::{extract::Query, response::IntoResponse, Json};
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use time::{format_description::well_known::Rfc3339, OffsetDateTime};
 
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct User {
     pub username: String,
     pub name: String,
@@ -29,10 +29,12 @@ pub async fn create_user() -> impl IntoResponse {
     ))
 }
 
-pub async fn get_user() -> impl IntoResponse {
+pub async fn get_user(Query(params): Query<User>) -> impl IntoResponse {
+    // For this println to work, Deserialize is required in derive of struct
+    println!("{},{}", params.name, params.username);
     Json(User {
-        username: "tahseen".to_string(),
-        name: "Tahseen Jamal".to_string(),
+        username: params.username,
+        name: params.name,
         created: OffsetDateTime::parse("2024-06-30T15:45:00+05:30", &Rfc3339).unwrap(),
     })
 }
