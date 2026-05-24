@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Basic Web App in Rust — Documentation</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/rust.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+  <style>
+    /* ── Reset & base ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d1117;
+      --surface:   #161b22;
+      --surface2:  #21262d;
+      --border:    #30363d;
+      --accent:    #6e40c9;
+      --accent2:   #58a6ff;
+      --green:     #3fb950;
+      --orange:    #e3b341;
+      --red:       #f85149;
+      --text:      #e6edf3;
+      --text-dim:  #8b949e;
+      --rust:      #ce422b;
+      --rust-dim:  #8c2a1c;
+      --card-r:    10px;
+      --mono:      "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ──────────────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      width: 256px;
+      min-width: 256px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 32px 0 40px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 20px 28px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .nav-logo .crab {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .nav-logo-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.3px;
+    }
+
+    .nav-logo-text span {
+      display: block;
+      color: var(--rust);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    nav a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 20px;
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 13.5px;
+      border-left: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+
+    nav a:hover,
+    nav a.active {
+      color: var(--text);
+      border-left-color: var(--accent);
+      background: rgba(110, 64, 201, 0.08);
+    }
+
+    .nav-section {
+      padding: 14px 20px 4px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    /* ── Main content ─────────────────────────────────────────── */
+    main {
+      flex: 1;
+      max-width: 900px;
+      padding: 48px 56px 80px;
+      overflow-x: hidden;
+    }
+
+    /* ── Hero ─────────────────────────────────────────────────── */
+    .hero {
+      margin-bottom: 56px;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(206,66,43,0.12);
+      border: 1px solid rgba(206,66,43,0.35);
+      color: #ff7b5c;
+      border-radius: 20px;
+      padding: 3px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      line-height: 1.15;
+      background: linear-gradient(135deg, #e6edf3 0%, #8b949e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+    }
+
+    .hero p {
+      font-size: 16px;
+      color: var(--text-dim);
+      max-width: 580px;
+      line-height: 1.8;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 24px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: var(--mono);
+      border: 1px solid;
+    }
+
+    .badge-rust   { background: rgba(206,66,43,0.12); border-color: rgba(206,66,43,0.4); color: #ff7b5c; }
+    .badge-axum   { background: rgba(88,166,255,0.10); border-color: rgba(88,166,255,0.3); color: var(--accent2); }
+    .badge-tokio  { background: rgba(63,185,80,0.10); border-color: rgba(63,185,80,0.3); color: var(--green); }
+    .badge-serde  { background: rgba(227,179,65,0.10); border-color: rgba(227,179,65,0.3); color: var(--orange); }
+
+    /* ── Sections ─────────────────────────────────────────────── */
+    section { margin-bottom: 64px; }
+
+    h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h2 .icon {
+      font-size: 1.1rem;
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+    }
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin: 28px 0 12px;
+    }
+
+    p { color: var(--text-dim); margin-bottom: 12px; }
+
+    /* ── Code blocks ──────────────────────────────────────────── */
+    pre {
+      border-radius: var(--card-r);
+      border: 1px solid var(--border);
+      overflow-x: auto;
+      margin: 16px 0;
+      position: relative;
+    }
+
+    pre code.hljs {
+      border-radius: var(--card-r);
+      font-size: 13px;
+      font-family: var(--mono);
+      line-height: 1.6;
+      padding: 20px 24px;
+    }
+
+    .code-label {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      font-family: var(--mono);
+    }
+
+    code:not(.hljs) {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 13px;
+      font-family: var(--mono);
+      color: #ff7b5c;
+    }
+
+    /* ── Architecture box ─────────────────────────────────────── */
+    .arch-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-r);
+      padding: 28px 32px;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--text-dim);
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .arch-box .hi    { color: var(--accent2); }
+    .arch-box .hi2   { color: var(--green); }
+    .arch-box .hi3   { color: var(--orange); }
+    .arch-box .hi4   { color: #ff7b5c; }
+
+    /* ── Tables ───────────────────────────────────────────────── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin: 16px 0;
+    }
+
+    thead tr {
+      background: var(--surface2);
+    }
+
+    th {
+      padding: 10px 16px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-dim);
+      vertical-align: middle;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tbody tr:hover td { background: rgba(255,255,255,0.02); }
+
+    table { border: 1px solid var(--border); border-radius: var(--card-r); overflow: hidden; }
+
+    /* ── Method badges ────────────────────────────────────────── */
+    .method {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 800;
+      font-family: var(--mono);
+      letter-spacing: 0.5px;
+    }
+
+    .method-get  { background: rgba(63,185,80,0.15); color: var(--green); border: 1px solid rgba(63,185,80,0.35); }
+    .method-post { background: rgba(88,166,255,0.15); color: var(--accent2); border: 1px solid rgba(88,166,255,0.35); }
+
+    .status-201 { color: var(--green); font-weight: 700; font-family: var(--mono); font-size: 13px; }
+    .status-200 { color: var(--accent2); font-weight: 700; font-family: var(--mono); font-size: 13px; }
+
+    .route-path { color: var(--text); font-family: var(--mono); font-size: 13px; }
+
+    /* ── Endpoint cards ───────────────────────────────────────── */
+    .endpoint-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .endpoint-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-r);
+      padding: 20px;
+      transition: border-color 0.2s;
+    }
+
+    .endpoint-card:hover { border-color: var(--accent); }
+
+    .endpoint-card .ep-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .endpoint-card .ep-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    .endpoint-card .ep-fields {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .field-tag {
+      display: inline-block;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      margin: 2px 2px;
+    }
+
+    .field-tag.required {
+      border-color: rgba(206,66,43,0.4);
+      color: #ff9d8b;
+    }
+
+    /* ── Sequence diagrams ─────────────────────────────────────── */
+    .diagram-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-r);
+      margin: 20px 0;
+      overflow: hidden;
+    }
+
+    .diagram-label {
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dim);
+    }
+
+    .diagram-body {
+      padding: 24px;
+    }
+
+    .diagram-body .mermaid {
+      display: flex;
+      justify-content: center;
+    }
+
+    /* ── Mermaid theme override ────────────────────────────────── */
+    .mermaid svg {
+      max-width: 100%;
+    }
+
+    /* ── Info callout ─────────────────────────────────────────── */
+    .callout {
+      display: flex;
+      gap: 12px;
+      background: rgba(88,166,255,0.07);
+      border: 1px solid rgba(88,166,255,0.25);
+      border-radius: var(--card-r);
+      padding: 16px 20px;
+      margin: 20px 0;
+    }
+
+    .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .callout-body { font-size: 14px; color: var(--text-dim); }
+    .callout-body strong { color: var(--accent2); }
+
+    /* ── Tech stack grid ──────────────────────────────────────── */
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .stack-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-r);
+      padding: 16px 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .stack-card .stack-icon {
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .stack-card-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+
+    .stack-card-desc {
+      font-size: 12.5px;
+      color: var(--text-dim);
+    }
+
+    /* ── Decision list ────────────────────────────────────────── */
+    .decision-list {
+      list-style: none;
+      margin: 16px 0;
+    }
+
+    .decision-list li {
+      display: flex;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    .decision-list li:last-child { border-bottom: none; }
+
+    .decision-list .dl-bullet {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(110,64,201,0.2);
+      border: 1px solid rgba(110,64,201,0.5);
+      color: #b39ddb;
+      font-size: 11px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .decision-list .dl-body { color: var(--text-dim); }
+    .decision-list .dl-body strong { color: var(--text); }
+
+    /* ── Responsive ───────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { display: none; }
+      main { padding: 32px 24px 60px; }
+      .endpoint-grid { grid-template-columns: 1fr; }
+      .stack-grid { grid-template-columns: 1fr; }
+      h1 { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Sidebar navigation ── -->
+<nav id="sidebar">
+  <div class="nav-logo">
+    <div class="crab">🦀</div>
+    <div class="nav-logo-text">
+      basic-web-app
+      <span>in Rust</span>
+    </div>
+  </div>
+
+  <div class="nav-section">Overview</div>
+  <a href="#overview">&#9632; Introduction</a>
+  <a href="#stack">&#9632; Tech Stack</a>
+
+  <div class="nav-section">Architecture</div>
+  <a href="#structure">&#9632; Project Structure</a>
+  <a href="#arch">&#9632; Architecture Diagram</a>
+
+  <div class="nav-section">API Reference</div>
+  <a href="#endpoints">&#9632; Endpoints</a>
+  <a href="#schemas">&#9632; Schemas</a>
+  <a href="#sequences">&#9632; Sequence Diagrams</a>
+
+  <div class="nav-section">Usage</div>
+  <a href="#started">&#9632; Getting Started</a>
+  <a href="#examples">&#9632; curl Examples</a>
+  <a href="#design">&#9632; Design Decisions</a>
+</nav>
+
+<!-- ── Main content ── -->
+<main>
+
+  <!-- Hero -->
+  <div class="hero" id="overview">
+    <div class="hero-eyebrow">🦀 Rust &nbsp;·&nbsp; Axum &nbsp;·&nbsp; REST API</div>
+    <h1>Basic Web App<br/>in Rust</h1>
+    <p>
+      A minimal, idiomatic REST API demonstrating typed extractors,
+      separate request/response structs, RFC&nbsp;3339 timestamps,
+      and clean modular routing — all on Axum&nbsp;+&nbsp;Tokio.
+    </p>
+    <div class="badges">
+      <span class="badge badge-rust">Rust 2024</span>
+      <span class="badge badge-axum">axum 0.8</span>
+      <span class="badge badge-tokio">tokio 1</span>
+      <span class="badge badge-serde">serde + time</span>
+    </div>
+  </div>
+
+  <!-- Tech Stack -->
+  <section id="stack">
+    <h2><span class="icon">⚙</span> Tech Stack</h2>
+    <div class="stack-grid">
+      <div class="stack-card">
+        <div class="stack-icon">🕸</div>
+        <div>
+          <div class="stack-card-name">Axum 0.8</div>
+          <div class="stack-card-desc">Ergonomic type-safe HTTP framework built on Hyper and Tower. Extractors turn request parts into typed Rust values at compile time.</div>
+        </div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">⚡</div>
+        <div>
+          <div class="stack-card-name">Tokio 1</div>
+          <div class="stack-card-desc">Multi-threaded async runtime. Each request runs as a lightweight task; <code>tokio::main</code> drives the event loop.</div>
+        </div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">🔄</div>
+        <div>
+          <div class="stack-card-name">Serde 1</div>
+          <div class="stack-card-desc">Zero-cost serialization framework. <code>derive(Serialize, Deserialize)</code> generates JSON encode/decode at compile time.</div>
+        </div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-icon">🕐</div>
+        <div>
+          <div class="stack-card-name">time 0.3</div>
+          <div class="stack-card-desc"><code>OffsetDateTime::now_utc()</code> produces server-side UTC timestamps; <code>time::serde::rfc3339</code> serializes them as ISO&nbsp;8601 strings.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Project Structure -->
+  <section id="structure">
+    <h2><span class="icon">📁</span> Project Structure</h2>
+    <div class="arch-box"><span class="hi">src/</span>
+├── <span class="hi2">main.rs</span>               Entry point — binds TcpListener, starts axum::serve
+├── <span class="hi">models/</span>
+│   ├── <span class="hi3">user.rs</span>            CreateUserRequest · GetUserQuery · User · handlers
+│   └── <span class="hi3">blog.rs</span>            CreateBlogRequest · Blog · handlers
+└── <span class="hi">routes/</span>
+    ├── <span class="hi4">routes.rs</span>          Merges all sub-routers into one Router
+    ├── <span class="hi4">user_routes.rs</span>     /user  GET + POST
+    └── <span class="hi4">blog_routes.rs</span>     /blog  GET + POST</div>
+
+    <div class="callout">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <strong>Input/output separation</strong> — request structs (<code>CreateUserRequest</code>, <code>GetUserQuery</code>, <code>CreateBlogRequest</code>) only derive <code>Deserialize</code>; response structs (<code>User</code>, <code>Blog</code>) only derive <code>Serialize</code>. This prevents server-generated fields like <code>created</code> from leaking into client input requirements.
+      </div>
+    </div>
+  </section>
+
+  <!-- Architecture -->
+  <section id="arch">
+    <h2><span class="icon">🏗</span> Architecture Diagram</h2>
+    <div class="arch-box"><span class="hi">HTTP Client</span>  (curl / browser / frontend)
+      │
+      │  TCP :3000
+      ▼
+<span class="hi2">┌─────────────────────────────────────────────────────┐
+│             axum::Router  (create_routes)           │
+│                                                     │
+│   merge(user_routes())     merge(blog_routes())     │
+│   POST /user → create_user  POST /blog → create_blog│
+│   GET  /user → get_user     GET  /blog → get_blog   │
+└──────────┬──────────────────────────┬───────────────┘</span>
+           │                          │
+           ▼                          ▼
+<span class="hi3">┌───────────────────┐    ┌──────────────────────────┐
+│   models/user.rs  │    │     models/blog.rs        │
+│                   │    │                           │
+│ CreateUserRequest │    │ CreateBlogRequest         │
+│ GetUserQuery      │    │ Blog { user · tweet ·     │
+│ User (response)   │    │        timestamp }        │
+│                   │    │                           │
+│ create_user()     │    │ create_blog()             │
+│ get_user()        │    │ get_blog()                │
+└───────────────────┘    └──────────────────────────┘</span>
+           │                          │
+           └──────────┬───────────────┘
+                      ▼
+           <span class="hi4">OffsetDateTime::now_utc()</span>
+           RFC&nbsp;3339 in all responses — no client-supplied timestamps</div>
+  </section>
+
+  <!-- Endpoints -->
+  <section id="endpoints">
+    <h2><span class="icon">🔌</span> API Endpoints</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Method</th>
+          <th>Route</th>
+          <th>Input</th>
+          <th>Status</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="method method-post">POST</span></td>
+          <td><span class="route-path">/user</span></td>
+          <td>JSON body: <code>username</code>, <code>name</code></td>
+          <td><span class="status-201">201</span></td>
+          <td>Create a new user</td>
+        </tr>
+        <tr>
+          <td><span class="method method-get">GET</span></td>
+          <td><span class="route-path">/user</span></td>
+          <td>Query: <code>?username=&lt;value&gt;</code></td>
+          <td><span class="status-200">200</span></td>
+          <td>Retrieve a user by username</td>
+        </tr>
+        <tr>
+          <td><span class="method method-post">POST</span></td>
+          <td><span class="route-path">/blog</span></td>
+          <td>JSON body: <code>username</code>, <code>name</code>, <code>tweet</code></td>
+          <td><span class="status-201">201</span></td>
+          <td>Create a new blog post</td>
+        </tr>
+        <tr>
+          <td><span class="method method-get">GET</span></td>
+          <td><span class="route-path">/blog</span></td>
+          <td>—</td>
+          <td><span class="status-200">200</span></td>
+          <td>Retrieve the demo blog</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="endpoint-grid">
+      <div class="endpoint-card">
+        <div class="ep-header">
+          <span class="method method-post">POST</span>
+          <span class="route-path">/user</span>
+        </div>
+        <div class="ep-desc">Creates a user from the JSON body. Returns the user with a server-generated UTC timestamp.</div>
+        <div class="ep-fields">
+          Required fields:<br/>
+          <span class="field-tag required">username: String</span>
+          <span class="field-tag required">name: String</span>
+        </div>
+      </div>
+      <div class="endpoint-card">
+        <div class="ep-header">
+          <span class="method method-get">GET</span>
+          <span class="route-path">/user</span>
+        </div>
+        <div class="ep-desc">Looks up a user by username query param. Returns the user with a fresh server timestamp.</div>
+        <div class="ep-fields">
+          Required query params:<br/>
+          <span class="field-tag required">username: String</span>
+        </div>
+      </div>
+      <div class="endpoint-card">
+        <div class="ep-header">
+          <span class="method method-post">POST</span>
+          <span class="route-path">/blog</span>
+        </div>
+        <div class="ep-desc">Creates a blog post from the JSON body. Embeds a User object and records the server timestamp.</div>
+        <div class="ep-fields">
+          Required fields:<br/>
+          <span class="field-tag required">username: String</span>
+          <span class="field-tag required">name: String</span>
+          <span class="field-tag required">tweet: String</span>
+        </div>
+      </div>
+      <div class="endpoint-card">
+        <div class="ep-header">
+          <span class="method method-get">GET</span>
+          <span class="route-path">/blog</span>
+        </div>
+        <div class="ep-desc">Returns a static demo blog. No parameters required. Useful for health-checking the JSON serialization pipeline.</div>
+        <div class="ep-fields">No parameters required.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Schemas -->
+  <section id="schemas">
+    <h2><span class="icon">📋</span> Request &amp; Response Schemas</h2>
+
+    <h3>POST /user — Request body</h3>
+    <div style="position:relative">
+      <pre><code class="language-json">{
+  "username": "alice",
+  "name": "Alice Smith"
+}</code></pre>
+      <span class="code-label">JSON</span>
+    </div>
+
+    <h3>User — Response (all user endpoints)</h3>
+    <div style="position:relative">
+      <pre><code class="language-json">{
+  "username": "alice",
+  "name": "Alice Smith",
+  "created": "2024-06-30T10:15:30Z"
+}</code></pre>
+      <span class="code-label">JSON</span>
+    </div>
+
+    <h3>POST /blog — Request body</h3>
+    <div style="position:relative">
+      <pre><code class="language-json">{
+  "username": "alice",
+  "name": "Alice Smith",
+  "tweet": "Hello from Rust!"
+}</code></pre>
+      <span class="code-label">JSON</span>
+    </div>
+
+    <h3>Blog — Response (all blog endpoints)</h3>
+    <div style="position:relative">
+      <pre><code class="language-json">{
+  "user": {
+    "username": "alice",
+    "name": "Alice Smith",
+    "created": "2024-06-30T10:15:30Z"
+  },
+  "tweet": "Hello from Rust!",
+  "timestamp": "2024-06-30T10:15:30Z"
+}</code></pre>
+      <span class="code-label">JSON</span>
+    </div>
+
+    <h3>Rust structs</h3>
+    <div style="position:relative">
+      <pre><code class="language-rust">// Input — POST /user body
+#[derive(Deserialize)]
+pub struct CreateUserRequest { pub username: String, pub name: String }
+
+// Input — GET /user query string
+#[derive(Deserialize)]
+pub struct GetUserQuery { pub username: String }
+
+// Output — all user endpoints
+#[derive(Serialize)]
+pub struct User {
+    pub username: String,
+    pub name:     String,
+    #[serde(with = "time::serde::rfc3339")]
+    pub created:  OffsetDateTime,       // server-assigned
+}
+
+// Input — POST /blog body
+#[derive(Deserialize)]
+pub struct CreateBlogRequest {
+    pub username: String,
+    pub name:     String,
+    pub tweet:    String,
+}
+
+// Output — all blog endpoints
+#[derive(Serialize)]
+pub struct Blog {
+    user:      User,
+    tweet:     String,
+    #[serde(with = "time::serde::rfc3339")]
+    timestamp: OffsetDateTime,          // server-assigned
+}</code></pre>
+      <span class="code-label">Rust</span>
+    </div>
+  </section>
+
+  <!-- Sequence Diagrams -->
+  <section id="sequences">
+    <h2><span class="icon">🔀</span> Sequence Diagrams</h2>
+
+    <div class="diagram-card">
+      <div class="diagram-label">
+        <span class="method method-post">POST</span>
+        <span>/user — Create user</span>
+      </div>
+      <div class="diagram-body">
+        <div class="mermaid">
+sequenceDiagram
+    participant C as Client
+    participant R as Router
+    participant H as create_user()
+
+    C->>R: POST /user<br/>{"username":"alice","name":"Alice"}
+    R->>H: Json&lt;CreateUserRequest&gt;
+    H->>H: User::new(username, name)<br/>created = now_utc()
+    H-->>C: 201 Created<br/>{"username":"alice","name":"Alice","created":"...Z"}
+        </div>
+      </div>
+    </div>
+
+    <div class="diagram-card">
+      <div class="diagram-label">
+        <span class="method method-get">GET</span>
+        <span>/user — Retrieve user</span>
+      </div>
+      <div class="diagram-body">
+        <div class="mermaid">
+sequenceDiagram
+    participant C as Client
+    participant R as Router
+    participant H as get_user()
+
+    C->>R: GET /user?username=alice
+    R->>H: Query&lt;GetUserQuery&gt;
+    H->>H: User::new(username, username)<br/>created = now_utc()
+    H-->>C: 200 OK<br/>{"username":"alice","name":"alice","created":"...Z"}
+        </div>
+      </div>
+    </div>
+
+    <div class="diagram-card">
+      <div class="diagram-label">
+        <span class="method method-post">POST</span>
+        <span>/blog — Create blog post</span>
+      </div>
+      <div class="diagram-body">
+        <div class="mermaid">
+sequenceDiagram
+    participant C as Client
+    participant R as Router
+    participant H as create_blog()
+
+    C->>R: POST /blog<br/>{"username":"alice","name":"Alice","tweet":"Hello!"}
+    R->>H: Json&lt;CreateBlogRequest&gt;
+    H->>H: User::new(username, name)
+    H->>H: Blog::new(user, tweet)<br/>timestamp = now_utc()
+    H-->>C: 201 Created<br/>{"user":{...},"tweet":"Hello!","timestamp":"...Z"}
+        </div>
+      </div>
+    </div>
+
+    <div class="diagram-card">
+      <div class="diagram-label">
+        <span class="method method-get">GET</span>
+        <span>/blog — Demo blog</span>
+      </div>
+      <div class="diagram-body">
+        <div class="mermaid">
+sequenceDiagram
+    participant C as Client
+    participant R as Router
+    participant H as get_blog()
+
+    C->>R: GET /blog
+    R->>H: (no extractors)
+    H->>H: Demo Blog{user:"tahseen", tweet:"Hello World!"}
+    H-->>C: 200 OK<br/>{"user":{...},"tweet":"Hello World!","timestamp":"...Z"}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Getting Started -->
+  <section id="started">
+    <h2><span class="icon">🚀</span> Getting Started</h2>
+    <p>You need <a href="https://rustup.rs" style="color:var(--accent2)">Rust</a> installed (stable toolchain). No other dependencies.</p>
+    <div style="position:relative">
+      <pre><code class="language-bash">git clone https://github.com/tahseenjamal/basic-web-app-in-rust.git
+cd basic-web-app-in-rust
+cargo run</code></pre>
+      <span class="code-label">bash</span>
+    </div>
+    <p>Server starts on <code>http://127.0.0.1:3000</code>. You will see:</p>
+    <div style="position:relative">
+      <pre><code class="language-bash">Server listening on http://127.0.0.1:3000</code></pre>
+      <span class="code-label">output</span>
+    </div>
+  </section>
+
+  <!-- Examples -->
+  <section id="examples">
+    <h2><span class="icon">🧪</span> curl Examples</h2>
+
+    <h3>Create a user</h3>
+    <div style="position:relative">
+      <pre><code class="language-bash">curl -s -X POST http://127.0.0.1:3000/user \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"alice","name":"Alice Smith"}' | jq</code></pre>
+      <span class="code-label">bash</span>
+    </div>
+
+    <h3>Get a user</h3>
+    <div style="position:relative">
+      <pre><code class="language-bash">curl -s "http://127.0.0.1:3000/user?username=alice" | jq</code></pre>
+      <span class="code-label">bash</span>
+    </div>
+
+    <h3>Create a blog post</h3>
+    <div style="position:relative">
+      <pre><code class="language-bash">curl -s -X POST http://127.0.0.1:3000/blog \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"alice","name":"Alice Smith","tweet":"Hello from Rust!"}' | jq</code></pre>
+      <span class="code-label">bash</span>
+    </div>
+
+    <h3>Get the demo blog</h3>
+    <div style="position:relative">
+      <pre><code class="language-bash">curl -s http://127.0.0.1:3000/blog | jq</code></pre>
+      <span class="code-label">bash</span>
+    </div>
+  </section>
+
+  <!-- Design Decisions -->
+  <section id="design">
+    <h2><span class="icon">🧠</span> Design Decisions</h2>
+    <ul class="decision-list">
+      <li>
+        <div class="dl-bullet">1</div>
+        <div class="dl-body">
+          <strong>Separate input and output types.</strong>
+          <code>CreateUserRequest</code> / <code>GetUserQuery</code> / <code>CreateBlogRequest</code> are input-only (<code>Deserialize</code>);
+          <code>User</code> and <code>Blog</code> are output-only (<code>Serialize</code>).
+          This prevents server-generated fields (<code>created</code>, <code>timestamp</code>) from ever being
+          required in client requests.
+        </div>
+      </li>
+      <li>
+        <div class="dl-bullet">2</div>
+        <div class="dl-body">
+          <strong>Server-assigned timestamps via <code>OffsetDateTime::now_utc()</code>.</strong>
+          Clients never supply timestamps. The <code>time::serde::rfc3339</code> adapter
+          serializes them to a standard, human-readable ISO&nbsp;8601 string in responses.
+        </div>
+      </li>
+      <li>
+        <div class="dl-bullet">3</div>
+        <div class="dl-body">
+          <strong>Correct HTTP semantics.</strong>
+          <code>POST</code> handlers return <code>201 Created</code>; <code>GET</code> handlers return <code>200 OK</code>.
+          Axum's <code>Json&lt;T&gt;</code> extractor automatically returns <code>422 Unprocessable Entity</code>
+          if the request body is malformed or missing required fields.
+        </div>
+      </li>
+      <li>
+        <div class="dl-bullet">4</div>
+        <div class="dl-body">
+          <strong>Meaningful startup errors.</strong>
+          <code>expect("failed to bind — is port 3000 already in use?")</code> surfaces a
+          clear diagnostic instead of a cryptic panic if the port is already taken.
+        </div>
+      </li>
+      <li>
+        <div class="dl-bullet">5</div>
+        <div class="dl-body">
+          <strong>Stateless by design.</strong>
+          No database — all responses are constructed at request time.
+          To add persistence, inject a <code>sqlx::PgPool</code> into the router state
+          and pass it to handlers via <code>axum::extract::State</code>.
+        </div>
+      </li>
+    </ul>
+  </section>
+
+</main>
+
+<script>
+  // ── Mermaid init ──
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      background: '#161b22',
+      primaryColor: '#21262d',
+      primaryTextColor: '#e6edf3',
+      primaryBorderColor: '#30363d',
+      lineColor: '#58a6ff',
+      secondaryColor: '#161b22',
+      tertiaryColor: '#0d1117',
+      noteBkgColor: '#21262d',
+      noteTextColor: '#e6edf3',
+      noteBorderColor: '#30363d',
+      activationBkgColor: '#6e40c9',
+      activationBorderColor: '#8b5cf6',
+      sequenceNumberColor: '#e6edf3',
+      actorBkg: '#21262d',
+      actorBorder: '#30363d',
+      actorTextColor: '#e6edf3',
+      actorLineColor: '#58a6ff',
+    }
+  });
+
+  // ── Highlight.js init ──
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('pre code').forEach(block => {
+      hljs.highlightElement(block);
+    });
+
+    // ── Active nav link on scroll ──
+    const sections = document.querySelectorAll('section, .hero');
+    const navLinks = document.querySelectorAll('nav a');
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.forEach(l => l.classList.remove('active'));
+          const id = entry.target.id;
+          const active = document.querySelector(`nav a[href="#${id}"]`);
+          if (active) active.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-30% 0px -60% 0px' });
+
+    sections.forEach(s => observer.observe(s));
+  });
+</script>
+</body>
+</html>
